@@ -73,7 +73,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] is '{' and pline[-1] is'}'\
+                    if pline[0] is '{' and pline[-1] is '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -113,18 +113,53 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, args):
-        """ Create an object of any class"""
-        if not args:
-            print("** class name missing **")
-            return
-        elif args not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
-        new_instance = HBNBCommand.classes[args]()
-        storage.save()
-        print(new_instance.id)
-        storage.save()
+   def do_create(self, args):
+    """ Create an object of any class with given parameters"""
+    if not args:
+        print("** class name missing **")
+        return
+
+    arg_list = args.split()
+    class_name = arg_list[0]
+
+    if class_name not in HBNBCommand.classes:
+        print("** class doesn't exist **")
+        return
+
+    # Prepare kwargs dictionary for object instantiation
+    kwargs = {}
+    for arg in arg_list[1:]:
+        param_split = arg.split("=")
+        if len(param_split) != 2:
+            continue  # Skip invalid parameter
+        key = param_split[0]
+        value = param_split[1]
+
+        # Handle string values
+        if value.startswith('"') and value.endswith('"'):
+            value = value[1:-1]  # Remove quotes
+            value = value.replace('\\"', '"')  # Unescape double quotes
+            value = value.replace('_', ' ')  # Replace underscores with spaces
+        # Handle float values
+        elif '.' in value:
+            try:
+                value = float(value)
+            except ValueError:
+                continue  # Skip invalid float value
+        # Handle integer values
+        else:
+            try:
+                value = int(value)
+            except ValueError:
+                continue  # Skip invalid integer value
+
+        kwargs[key] = value
+
+    # Instantiate object with given parameters
+    new_instance = HBNBCommand.classes[class_name](**kwargs)
+    new_instance.save()
+    print(new_instance.id)
+
 
     def help_create(self):
         """ Help information for the create method """
@@ -322,3 +357,4 @@ class HBNBCommand(cmd.Cmd):
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
+
