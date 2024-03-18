@@ -1,17 +1,17 @@
 #!/usr/bin/python3
 """This module defines the FileStorage class for AirBnB project."""
 import json
-from models.user import User
+# from models.user import User
 from models.state import State
-from models.city import City
-from models.amenity import Amenity
-from models.place import Place
-from models.review import Review
-import shlex
+# from models.city import City
+# from models.amenity import Amenity
+# from models.place import Place
+# from models.review import Review
+# import shlex
 
 
 class FileStorage:
-    """This class serializes instances to a JSON file and deserializes JSON file to instances."""
+    """This class serializes JSON file to instances."""
     _file_path = "file.json"
     _objects = {}
 
