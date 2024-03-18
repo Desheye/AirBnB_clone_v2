@@ -3,7 +3,8 @@
 from os import getenv
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+# Removed unused import
+# from sqlalchemy.ext.declarative import declarative_base
 from models.base_model import Base
 from models.state import State
 from models.city import City
@@ -11,6 +12,7 @@ from models.user import User
 from models.place import Place
 from models.review import Review
 from models.amenity import Amenity
+
 
 class DBStorage:
     """This class manages SQL Alchemy database storage."""
@@ -24,13 +26,15 @@ class DBStorage:
         db = getenv("HBNB_MYSQL_DB")
         host = getenv("HBNB_MYSQL_HOST")
         env = getenv("HBNB_ENV")
+        type_storage = getenv("HBNB_TYPE_STORAGE")
 
-        self._engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
-                                     .format(user, passwd, host, db),
-                                     pool_pre_ping=True)
+        if type_storage == 'db':
+            self._engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
+                                         .format(user, passwd, host, db),
+                                         pool_pre_ping=True)
 
-        if env == "test":
-            Base.metadata.drop_all(self._engine)
+            if env == "test":
+                Base.metadata.drop_all(self._engine)
 
     def all(self, cls=None):
         """Returns a dictionary of all objects."""
@@ -66,11 +70,12 @@ class DBStorage:
 
     def reload(self):
         """Configure the session and metadata."""
-        Base.metadata.create_all(self._engine)
-        Session = sessionmaker(bind=self._engine, expire_on_commit=False)
-        self._session = scoped_session(Session)()
+        if self._engine:
+            Base.metadata.create_all(self._engine)
+            Session = sessionmaker(bind=self._engine, expire_on_commit=False)
+            self._session = scoped_session(Session)()
 
     def close(self):
         """Close the session."""
-        self._session.close()
-
+        if self._session:
+            self._session.close()

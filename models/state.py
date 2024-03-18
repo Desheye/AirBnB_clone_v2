@@ -35,4 +35,3 @@ class State(BaseModel, Base):
             if elem.state_id == self.id:
                 result.append(elem)
         return result
-
