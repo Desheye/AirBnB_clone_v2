@@ -9,6 +9,7 @@ from models.place import Place
 from models.review import Review
 import shlex
 
+
 class FileStorage:
     """This class serializes instances to a JSON file and deserializes JSON file to instances."""
     _file_path = "file.json"
@@ -56,7 +57,15 @@ class FileStorage:
             key = "{}.{}".format(type(obj).__name__, obj.id)
             del self._objects[key]
 
+    def delete_state(self, state_obj):
+        """Deletes a State object from the storage."""
+        if isinstance(state_obj, State):
+            key = "{}.{}".format(type(state_obj).__name__, state_obj.id)
+            del self._objects[key]
+        else:
+            # Optionally handle cases where a non-State object is passed
+            print("Only State objects can be deleted using delete_state.")
+
     def close(self):
         """Reloads the data from the JSON file."""
         self.reload()
-
