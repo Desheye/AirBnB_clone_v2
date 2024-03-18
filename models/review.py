@@ -1,17 +1,16 @@
 #!/usr/bin/python3
-"""This module defines the Review class."""
+"""This is the review class"""
 from sqlalchemy.ext.declarative import declarative_base
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Float
 
 
 class Review(BaseModel, Base):
-    """This class represents a review in the system.
-
+    """This is the class for Review
     Attributes:
-        place_id: The id of the place being reviewed.
-        user_id: The id of the user who wrote the review.
-        text: The content of the review.
+        place_id: place id
+        user_id: user id
+        text: review description
     """
     __tablename__ = "reviews"
     text = Column(String(1024), nullable=False)

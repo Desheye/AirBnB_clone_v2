@@ -1,71 +1,66 @@
 #!/usr/bin/python3
-"""This module defines the FileStorage class for AirBnB project."""
+"""Handles serialization and deserialization of instances to/from a JSON file."""
 import json
-# from models.user import User
+import shlex
+from models.base_model import BaseModel
+from models.user import User
 from models.state import State
-# from models.city import City
-# from models.amenity import Amenity
-# from models.place import Place
-# from models.review import Review
-# import shlex
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 
 
 class FileStorage:
-    """This class serializes JSON file to instances."""
-    _file_path = "file.json"
-    _objects = {}
+    """Serializes instances to a JSON file and deserializes JSON file to instances."""
+
+    __file_path = "file.json"
+    __objects = {}
 
     def all(self, cls=None):
-        """Returns a dictionary containing all objects."""
-        result = {}
+        """Returns a dictionary of objects filtered by class."""
+        obj_dict = {}
         if cls:
-            for key, value in self._objects.items():
-                partition = key.split('.')
-                if partition[0] == cls.__name__:
-                    result[key] = value
-            return result
+            for key, obj in self.__objects.items():
+                cls_name, obj_id = key.split('.')
+                if cls_name == cls.__name__:
+                    obj_dict[key] = obj
         else:
-            return self._objects
+            obj_dict = self.__objects
+        return obj_dict
 
     def new(self, obj):
-        """Adds a new object to the storage."""
+        """Adds a new object to the dictionary."""
         if obj:
             key = "{}.{}".format(type(obj).__name__, obj.id)
-            self._objects[key] = obj
+            self.__objects[key] = obj
 
     def save(self):
-        """Serializes the objects to the JSON file."""
-        my_dict = {}
-        for key, value in self._objects.items():
-            my_dict[key] = value.to_dict()
-        with open(self._file_path, 'w', encoding="UTF-8") as f:
-            json.dump(my_dict, f)
+        """Serializes the objects dictionary to a JSON file."""
+        serialized_objs = {}
+        for key, value in self.__objects.items():
+            serialized_objs[key] = value.to_dict()
+        with open(self.__file_path, 'w', encoding="UTF-8") as f:
+            json.dump(serialized_objs, f)
 
     def reload(self):
         """Deserializes the JSON file to objects."""
         try:
-            with open(self._file_path, 'r', encoding="UTF-8") as f:
-                for key, value in json.load(f).items():
+            with open(self.__file_path, 'r', encoding="UTF-8") as f:
+                deserialized_objs = json.load(f)
+                for key, value in deserialized_objs.items():
+                    cls_name, obj_id = key.split('.')
                     value = eval(value["__class__"])(**value)
-                    self._objects[key] = value
+                    self.__objects[key] = value
         except FileNotFoundError:
             pass
 
     def delete(self, obj=None):
-        """Deletes an object from the storage."""
+        """Deletes an object from the dictionary."""
         if obj:
             key = "{}.{}".format(type(obj).__name__, obj.id)
-            del self._objects[key]
-
-    def delete_state(self, state_obj):
-        """Deletes a State object from the storage."""
-        if isinstance(state_obj, State):
-            key = "{}.{}".format(type(state_obj).__name__, state_obj.id)
-            del self._objects[key]
-        else:
-            # Optionally handle cases where a non-State object is passed
-            print("Only State objects can be deleted using delete_state.")
+            del self.__objects[key]
 
     def close(self):
-        """Reloads the data from the JSON file."""
+        """Reloads objects from the JSON file."""
         self.reload()
