@@ -11,8 +11,7 @@ class State(BaseModel, Base):
 
     __tablename__ = "states"
     name = Column(String(128), nullable=False)
-    cities = relationship("City", cascade='all, delete, delete-orphan',
-                          backref="state")
+    cities = relationship("City", cascade="all, delete, delete-orphan", backref="state")
 
     @property
     def get_cities(self):
@@ -21,9 +20,9 @@ class State(BaseModel, Base):
         lista = []
         result = []
         for key in var:
-            city = key.replace('.', ' ')
+            city = key.replace(".", " ")
             city = shlex.split(city)
-            if city[0] == 'City':
+            if city[0] == "City":
                 lista.append(var[key])
         for elem in lista:
             if elem.state_id == self.id:

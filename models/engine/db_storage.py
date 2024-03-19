@@ -13,8 +13,10 @@ from models.place import Place
 from models.review import Review
 from models.amenity import Amenity
 
+
 class DBStorage:
     """A class to manage database storage using SQLAlchemy."""
+
     __engine = None
     __session = None
 
@@ -26,9 +28,10 @@ class DBStorage:
         host = getenv("HBNB_MYSQL_HOST")
         env = getenv("HBNB_ENV")
 
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
-                                      .format(user, password, host, db),
-                                      pool_pre_ping=True)
+        self.__engine = create_engine(
+            "mysql+mysqldb://{}:{}@{}/{}".format(user, password, host, db),
+            pool_pre_ping=True,
+        )
 
         if env == "test":
             Base.metadata.drop_all(self.__engine)

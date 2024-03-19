@@ -22,7 +22,7 @@ class FileStorage:
         obj_dict = {}
         if cls:
             for key, obj in self.__objects.items():
-                cls_name, obj_id = key.split('.')
+                cls_name, obj_id = key.split(".")
                 if cls_name == cls.__name__:
                     obj_dict[key] = obj
         else:
@@ -40,16 +40,16 @@ class FileStorage:
         serialized_objs = {}
         for key, value in self.__objects.items():
             serialized_objs[key] = value.to_dict()
-        with open(self.__file_path, 'w', encoding="UTF-8") as f:
+        with open(self.__file_path, "w", encoding="UTF-8") as f:
             json.dump(serialized_objs, f)
 
     def reload(self):
         """Deserializes the JSON file to objects."""
         try:
-            with open(self.__file_path, 'r', encoding="UTF-8") as f:
+            with open(self.__file_path, "r", encoding="UTF-8") as f:
                 deserialized_objs = json.load(f)
                 for key, value in deserialized_objs.items():
-                    cls_name, obj_id = key.split('.')
+                    cls_name, obj_id = key.split(".")
                     value = eval(value["__class__"])(**value)
                     self.__objects[key] = value
         except FileNotFoundError:

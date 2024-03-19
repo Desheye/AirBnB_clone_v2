@@ -2,10 +2,13 @@
 import unittest
 import MySQLdb
 
+
 class TestMySQLInteractions(unittest.TestCase):
     def setUp(self):
         # Connect to the test database
-        self.db = MySQLdb.connect(host="localhost", user="testuser", passwd="testpass", db="testdb")
+        self.db = MySQLdb.connect(
+            host="localhost", user="testuser", passwd="testpass", db="testdb"
+        )
         self.cursor = self.db.cursor()
 
     def tearDown(self):
@@ -33,5 +36,6 @@ class TestMySQLInteractions(unittest.TestCase):
         self.cursor.execute("SELECT COUNT(*) FROM states")
         return self.cursor.fetchone()[0]
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
