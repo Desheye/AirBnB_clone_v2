@@ -17,11 +17,11 @@ class User(BaseModel, Base):
 
     id = Column(String(36), primary_key=True)
     created_at = Column(DateTime, nullable=False,
-                        default=datetime.utcnow)  # Example usage of DateTime
+                        default=datetime.utcnow)
     updated_at = Column(DateTime,
                         nullable=False,
                         default=datetime.utcnow,
-                        onupdate=datetime.utcnow)  # Example usage of DateTime
+                        onupdate=datetime.utcnow)
     email = Column(String(128), nullable=False)
     password = Column(String(128), nullable=False)
     first_name = Column(String(128))
