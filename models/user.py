@@ -1,11 +1,7 @@
-#!/usr/bin/python3
-"""Defines the User class."""
-from sqlalchemy.ext.declarative import declarative_base
-from models.base_model import BaseModel, Base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, String, DateTime  # Import DateTime here
 from sqlalchemy.orm import relationship
-from models.place import Place
-from models.review import Review
+from models.base_model import BaseModel, Base
+from datetime import datetime  # If you are using this for default value
 
 
 class User(BaseModel, Base):
@@ -18,11 +14,22 @@ class User(BaseModel, Base):
     """
 
     __tablename__ = "users"
+
+    id = Column(String(36), primary_key=True)
+    created_at = Column(DateTime, nullable=False,
+                        default=datetime.utcnow)  # Example usage of DateTime
+    updated_at = Column(DateTime,
+                        nullable=False,
+                        default=datetime.utcnow,
+                        onupdate=datetime.utcnow)  # Example usage of DateTime
     email = Column(String(128), nullable=False)
     password = Column(String(128), nullable=False)
     first_name = Column(String(128))
     last_name = Column(String(128))
-    places = relationship("Place", cascade="all, delete, delete-orphan", backref="user")
-    reviews = relationship(
-        "Review", cascade="all, delete, delete-orphan", backref="user"
-    )
+
+    places = relationship("Place",
+                          cascade="all, delete, delete-orphan",
+                          backref="user")
+    reviews = relationship("Review",
+                           cascade="all, delete, delete-orphan",
+                           backref="user")
