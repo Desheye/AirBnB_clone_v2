@@ -1,30 +1,39 @@
 #!/usr/bin/python3
-# Fabfile to delete out-of-date archives.
-import os
-from fabric.api import *
+"""Fabric script that deletes out-of-date archives."""
 
-env.hosts = ["104.196.168.90", "35.196.46.172"]
+from fabric.api import env, run, local, put
+from os.path import exists
+from datetime import datetime
+from os import listdir
+
+env.hosts = ['54.237.224.42', '3.80.18.166']  # Replace with your web server IPs
+env.user = 'ubuntu'  # Replace with your SSH user
+env.key_filename = '/root/.ssh/your/school'  # Replace with the path to your SSH private key
 
 
 def do_clean(number=0):
-    """Delete out-of-date archives.
+    """Deletes out-of-date archives."""
+    try:
+        number = int(number)
+        if number < 1:
+            number = 1
 
-    Args:
-        number (int): The number of archives to keep.
+        # Clean local archives
+        local("ls -t versions | tail -n +{} | xargs -I {{}} rm versions/{{}}".format(number))
 
-    If number is 0 or 1, keeps only the most recent archive. If
-    number is 2, keeps the most and second-most recent archives,
-    etc.
-    """
-    number = 1 if int(number) == 0 else int(number)
+        # Clean remote archives
+        releases_path = "/data/web_static/releases"
+        archives = run("ls -t {} | tail -n +{} || true".format(releases_path, number))
+        if archives:
+            archives = archives.split("\n")
+            archives_to_delete = archives[number:]
+            for archive in archives_to_delete:
+                run("rm {}/{}".format(releases_path, archive))
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
-    archives = sorted(os.listdir("versions"))
-    [archives.pop() for i in range(number)]
-    with lcd("versions"):
-        [local("rm ./{}".format(a)) for a in archives]
 
-    with cd("/data/web_static/releases"):
-        archives = run("ls -tr").split()
-        archives = [a for a in archives if "web_static_" in a]
-        [archives.pop() for i in range(number)]
-        [run("rm -rf ./{}".format(a)) for a in archives]
+if __name__ == "__main__":
+    do_clean()
