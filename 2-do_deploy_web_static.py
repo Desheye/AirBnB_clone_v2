@@ -5,18 +5,19 @@ from fabric.api import env, put, run
 
 env.hosts = ["54.237.224.42", "3.80.18.166"]
 
+
 def do_deploy(archive_path):
     """Distribute an archive to a web server.
 
     Args:
         archive_path (str): The path of the archive to distribute.
-        
+
     Returns:
         bool: Returns False if the file doesn't exist at archive_path or an error occurs, otherwise True.
     """
     if not os.path.isfile(archive_path):
         return False
-    
+
     file = archive_path.split("/")[-1]
     name = file.split(".")[0]
 
@@ -39,4 +40,3 @@ def do_deploy(archive_path):
     if run("ln -s /data/web_static/releases/{}/ /data/web_static/current".format(name)).failed:
         return False
     return True
-

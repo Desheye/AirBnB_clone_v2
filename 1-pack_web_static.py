@@ -4,6 +4,7 @@ import os.path
 from datetime import datetime
 from fabric.api import local
 
+
 def do_pack():
     """
     Create a tar gzipped archive of the web_static directory.

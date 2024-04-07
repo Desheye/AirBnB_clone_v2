@@ -6,9 +6,11 @@ from os.path import exists
 from datetime import datetime
 from os import listdir
 
-env.hosts = ['54.237.224.42', '3.80.18.166']  # Replace with your web server IPs
+# Replace with your web server IPs
+env.hosts = ['54.237.224.42', '3.80.18.166']
 env.user = 'ubuntu'  # Replace with your SSH user
-env.key_filename = '/root/.ssh/your/school'  # Replace with the path to your SSH private key
+# Replace with the path to your SSH private key
+env.key_filename = '/root/.ssh/your/school'
 
 
 def do_clean(number=0):
@@ -19,11 +21,13 @@ def do_clean(number=0):
             number = 1
 
         # Clean local archives
-        local("ls -t versions | tail -n +{} | xargs -I {{}} rm versions/{{}}".format(number))
+        local(
+            "ls -t versions | tail -n +{} | xargs -I {{}} rm versions/{{}}".format(number))
 
         # Clean remote archives
         releases_path = "/data/web_static/releases"
-        archives = run("ls -t {} | tail -n +{} || true".format(releases_path, number))
+        archives = run(
+            "ls -t {} | tail -n +{} || true".format(releases_path, number))
         if archives:
             archives = archives.split("\n")
             archives_to_delete = archives[number:]

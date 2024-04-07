@@ -5,7 +5,8 @@ from fabric.api import env, run, local, put
 from os.path import exists
 from datetime import datetime
 
-env.hosts = ['54.237.224.42', '3.80.18.166']  # Replace with your web server IPs
+# Replace with your web server IPs
+env.hosts = ['54.237.224.42', '3.80.18.166']
 env.user = 'ubuntu'  # Replace with your SSH user
 
 
@@ -31,7 +32,8 @@ def do_deploy(archive_path):
         return False
     try:
         filename = archive_path.split("/")[-1]
-        path_without_ext = "/data/web_static/releases/{}/".format(filename.split(".")[0])
+        path_without_ext = "/data/web_static/releases/{}/".format(
+            filename.split(".")[0])
 
         put(archive_path, "/tmp/")
         run("mkdir -p {}".format(path_without_ext))
@@ -53,6 +55,7 @@ def deploy():
     if not archive_path:
         return False
     return do_deploy(archive_path)
+
 
 if __name__ == "__main__":
     deploy()
