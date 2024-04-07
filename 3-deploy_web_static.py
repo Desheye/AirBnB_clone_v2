@@ -20,7 +20,8 @@ def do_pack():
             return archive_path
         else:
             return None
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 
@@ -41,7 +42,8 @@ def do_deploy(archive_path):
         run("rm -rf /data/web_static/current")
         run("ln -s {} /data/web_static/current".format(path_without_ext))
         return True
-    except:
+    except Exception as e:
+        print(e)
         return False
 
 
