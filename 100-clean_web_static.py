@@ -1,43 +1,38 @@
 #!/usr/bin/python3
-"""Fabric script that deletes out-of-date archives."""
+"""
+Deletes outdated archives.
 
-from fabric.api import env, run, local, put
-from os.path import exists
-from datetime import datetime
-from os import listdir
+Usage:
+fab -f 100-clean_web_static.py do_clean:number=2 -i ssh-key -u ubuntu > /dev/null 2>&1
+"""
 
-# Replace with your web server IPs
-env.hosts = ['54.237.224.42', '3.80.18.166']
-env.user = 'ubuntu'  # Replace with your SSH user
-# Replace with the path to your SSH private key
-env.key_filename = '/root/.ssh/your/school'
+import os
+from fabric.api import *
 
+# Define the host(s)
+env.hosts = ['52.91.149.144', '52.91.121.196']
 
 def do_clean(number=0):
-    """Deletes out-of-date archives."""
-    try:
-        number = int(number)
-        if number < 1:
-            number = 1
+    """
+    Delete outdated archives.
 
-        # Clean local archives
-        local(
-            "ls -t versions | tail -n +{} | xargs -I {{}} rm versions/{{}}".format(number))
+    Args:
+        number (int): Number of archives to keep. If set to 0 or 1, keeps only the
+                      most recent archive. If set to 2, keeps the two most recent archives,
+                      and so on.
+    """
+    # Ensure number is an integer
+    number = 1 if int(number) == 0 else int(number)
 
-        # Clean remote archives
-        releases_path = "/data/web_static/releases"
-        archives = run(
-            "ls -t {} | tail -n +{} || true".format(releases_path, number))
-        if archives:
-            archives = archives.split("\n")
-            archives_to_delete = archives[number:]
-            for archive in archives_to_delete:
-                run("rm {}/{}".format(releases_path, archive))
-        return True
-    except Exception as e:
-        print(e)
-        return False
+    # Delete local outdated archives
+    archives = sorted(os.listdir("versions"))
+    [archives.pop() for i in range(number)]
+    with lcd("versions"):
+        [local("rm ./{}".format(a)) for a in archives]
 
-
-if __name__ == "__main__":
-    do_clean()
+    # Delete remote outdated archives
+    with cd("/data/web_static/releases"):
+        archives = run("ls -tr").split()
+        archives = [a for a in archives if "web_static_" in a]
+        [archives.pop() for i in range(number)]
+        [run("rm -rf ./{}".format(a)) for a in archives]
