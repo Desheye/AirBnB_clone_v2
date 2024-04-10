@@ -11,7 +11,6 @@ from os.path import exists
 # Replace with your web server IPs
 env.hosts = ['52.91.149.144', '52.91.121.196']
 
-
 def do_deploy(archive_path):
     """Distributes an archive to the web servers."""
     if exists(archive_path) is False:
@@ -28,6 +27,7 @@ def do_deploy(archive_path):
         run('rm -rf {}{}/web_static'.format(path, no_ext))
         run('rm -rf /data/web_static/current')
         run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
+        print("New version deployed!")  # Print a success message
         return True
     except:
         return False
