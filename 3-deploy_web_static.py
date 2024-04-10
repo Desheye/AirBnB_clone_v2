@@ -1,4 +1,4 @@
-!/usr/bin/python3
+#!/usr/bin/bash/python3
 """
 Fabric script creates, distributes 
 an archive to the web servers.
