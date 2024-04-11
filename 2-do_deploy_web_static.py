@@ -8,7 +8,7 @@ Execute: fab -f 1-deploy_web_static.py do_deploy -i ~/.ssh/id_rsa -u ubuntu
 from fabric.api import put, run, env
 from os.path import exists
 
-# Replace with your web server IPs
+# Set the web server IPs
 env.hosts = ['52.91.149.144', '52.91.121.196']
 
 def do_deploy(archive_path):
@@ -29,5 +29,6 @@ def do_deploy(archive_path):
         run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
         print("New version deployed!")  # Print a success message
         return True
-    except:
+    except Exception as e:
+        print("Deployment failed:", e)
         return False
