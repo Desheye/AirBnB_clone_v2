@@ -29,7 +29,8 @@ class DBStorage:
         env = getenv("HBNB_ENV")
 
         self.__engine = create_engine(
-            "mysql+mysqldb://{}:{}@{}/{}".format(user, password, host, db),
+            "mysql+mysqldb://{}:{}@{}/{}?charset=latin1".format(
+                user, password, host, db),
             pool_pre_ping=True,
         )
 
@@ -78,4 +79,12 @@ class DBStorage:
 
     def close(self):
         """Close the session."""
-        self.__session.close()
+        if self.__session is not None:
+            self.__session.close()
+
+
+# Testing the DBStorage class
+if __name__ == "__main__":
+    db_storage = DBStorage()
+    db_storage.reload()
+    db_storage.close()
